@@ -12,16 +12,22 @@ import org.springframework.stereotype.Service;
 import com.mongo.app.interfaceService.IUsuarioService;
 import com.mongo.app.models.Usuario;
 import com.mongo.app.repository.UsuarioRepository;
+//import com.mongo.app.util.SequenceUsuario;
 @Service
 public class UsuarioService implements IUsuarioService{
 
+//	@Autowired
+//	private SequenceUsuario sequence;
+	
 	@Autowired
 	private UsuarioRepository repository;
 	
 	@Override
 	public ResponseEntity<Usuario> save(Usuario usuario) {
 		try {
-			if(repository.findByNombreAndEmail(usuario.getNombre(), usuario.getEmail()).isEmpty()) {
+			if(repository.findByNombreAndEmail(usuario.getUsername(), usuario.getEmail()).isEmpty()) {
+//				usuario.setId(sequence.generateSequence(Usuario.SEQUENCE_NAME));
+				System.out.println(usuario);
 				Usuario userSave=repository.save(usuario);
 				return new ResponseEntity<Usuario> (userSave, HttpStatus.CREATED);
 			}else {
@@ -45,7 +51,9 @@ public class UsuarioService implements IUsuarioService{
 	@Override
 	public ResponseEntity<Usuario> update(Usuario usuario) {
 		try {
-			Usuario userUdapte=repository.save(usuario);
+//			usuario.setId(sequence.generateSequence(Usuario.SEQUENCE_NAME));
+			Usuario user=repository.findById(usuario.getId()).orElse(usuario);
+			Usuario userUdapte=repository.save(user);
 			return new ResponseEntity<Usuario> (userUdapte, HttpStatus.FOUND);
 		}catch(Exception e){
 			return new ResponseEntity<Usuario> (new Usuario(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,7 +69,7 @@ public class UsuarioService implements IUsuarioService{
 	public ResponseEntity<String> delete(String id) {
 		try {
 			Optional<Usuario> user=repository.findById(id);
-			return new ResponseEntity<String> ("El usuario "+user.get().getNombre()+" fue eliminado con éxito", HttpStatus.OK);
+			return new ResponseEntity<String> ("El usuario "+user.get().getUsername()+" fue eliminado con éxito", HttpStatus.OK);
 		}catch(Exception e) {
 			return new ResponseEntity<String> (e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

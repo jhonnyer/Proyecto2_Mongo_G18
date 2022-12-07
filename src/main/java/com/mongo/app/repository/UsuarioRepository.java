@@ -10,5 +10,7 @@ import com.mongo.app.models.Usuario;
 @Repository
 public interface UsuarioRepository extends MongoRepository<Usuario, String>{
 	@Query("{nombre:?0, email:?1}")
-	List<Usuario> findByNombreAndEmail(String nombre, String email);
+	List<Usuario> findByNombreAndEmail(String username, String email);
+	
+	Usuario findByUsername(String username);
 }
